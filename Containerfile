@@ -57,3 +57,11 @@ RUN mkdir -p /var/lib/alternatives && \
 # - /var/lib/alternatives is required to prevent failure with some RPM installs
 # - All RUN commands must end with ostree container commit
 #   see: https://coreos.github.io/rpm-ostree/container/#using-ostree-container-commit
+
+FROM quay.io/fedora-ostree-desktops/silverblue:41
+
+RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo 
+RUN dnf5 -y remove kernel* && \
+    rm -r /root # not necessary on ublue-os/main derived images
+
+RUN dnf5 -y install --allowerasing kernel-surface iptsd libwacom-surface
