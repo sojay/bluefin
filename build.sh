@@ -4,6 +4,22 @@ set -ouex pipefail
 
 RELEASE="$(rpm -E %fedora)"
 
+dnf5 -y install --allowerasing \
+  kernel-surface \
+  iptsd \
+  libwacom-surface \
+  # kernel-$KERNEL_VERSION \
+  # kernel-core-$KERNEL_VERSION \
+  # kernel-devel-$KERNEL_VERSION \
+  # kernel-devel-matched-$KERNEL_VERSION \
+  # kernel-modules-$KERNEL_VERSION \
+  # kernel-modules-core-$KERNEL_VERSION \
+  # kernel-modules-extra-$KERNEL_VERSION \
+  # kernel-tools-$KERNEL_VERSION \
+  # kernel-tools-libs-$KERNEL_VERSION \
+  # kernel-uki-virt-$KERNEL_VERSION \
+  # kernel-uki-virt-addons-$KERNEL_VERSION \
+
 ### Install packages
 rpm-ostree install screen
 
