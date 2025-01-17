@@ -80,8 +80,8 @@ RUN mkdir -p /var/lib/alternatives && \
     /tmp/build.sh && \
     ostree container commit
 
-COPY branding.sh /tmp/branding.sh
-RUN chmod +x /tmp/branding.sh
-RUN /tmp/branding.sh && \
-    ostree container commit
+# COPY branding.sh /tmp/branding.sh
+# RUN chmod +x /tmp/branding.sh
+# RUN /tmp/branding.sh && \
+#     ostree container commit
 
