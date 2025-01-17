@@ -69,8 +69,6 @@ RUN mkdir -p /var/lib/alternatives && \
 FROM quay.io/fedora-ostree-desktops/silverblue:41
 
 RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
-    ostree container commit
-
 RUN dnf5 -y remove kernel* && \
     rm -r /root # not necessary on ublue-os/main derived images
 
