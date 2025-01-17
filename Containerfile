@@ -69,10 +69,10 @@ COPY build.sh /tmp/build.sh
 # RUN dnf5 -y remove kernel* && \
 #     rm -r /root # not necessary on ublue-os/main derived images
 
-COPY gnome-extensions.sh /tmp/gnome-extensions.sh
-RUN chmod +x /tmp/gnome-extensions.sh
-RUN /tmp/gnome-extensions.sh && \
-    ostree container commit
+# COPY gnome-extensions.sh /tmp/gnome-extensions.sh
+# RUN chmod +x /tmp/gnome-extensions.sh
+# RUN /tmp/gnome-extensions.sh && \
+#     ostree container commit
 
 COPY build.sh /tmp/build.sh
 RUN chmod +x /tmp/build.sh
