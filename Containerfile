@@ -57,16 +57,15 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 
 COPY build.sh /tmp/build.sh
 
-RUN mkdir -p /var/lib/alternatives && \
-    /tmp/build.sh && \
-    ostree container commit
+# RUN mkdir -p /var/lib/alternatives && \
+#     /tmp/build.sh && \
+#     ostree container commit
 
 ## NOTES:
 # - /var/lib/alternatives is required to prevent failure with some RPM installs
 # - All RUN commands must end with ostree container commit
 #   see: https://coreos.github.io/rpm-ostree/container/#using-ostree-container-commit
 
-RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
 # RUN dnf5 -y remove kernel* && \
 #     rm -r /root # not necessary on ublue-os/main derived images
 
@@ -77,6 +76,7 @@ RUN /tmp/gnome-extensions.sh && \
 
 COPY build.sh /tmp/build.sh
 RUN chmod +x /tmp/build.sh
+
 RUN mkdir -p /var/lib/alternatives && \
     /tmp/build.sh && \
     ostree container commit
