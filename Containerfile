@@ -67,8 +67,8 @@ RUN mkdir -p /var/lib/alternatives && \
 #   see: https://coreos.github.io/rpm-ostree/container/#using-ostree-container-commit
 
 RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
-RUN dnf5 -y remove kernel* && \
-    rm -r /root # not necessary on ublue-os/main derived images
+# RUN dnf5 -y remove kernel* && \
+#     rm -r /root # not necessary on ublue-os/main derived images
 
 COPY gnome-extensions.sh /tmp/gnome-extensions.sh
 RUN chmod +x /tmp/gnome-extensions.sh
