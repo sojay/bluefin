@@ -113,7 +113,7 @@ else
   rpm-ostree override replace --experimental "${INSTALL_LIST[@]}"
 fi
 
-if [[ $SUFFIX == *"surface"* ]]; then
+if [[ $SUFFIX == *"nvidia"* ]]; then
   rpm-ostree override replace --experimental \
     /tmp/akmods-nvidia-open-rpms/kmods/*nvidia*.rpm
 fi
