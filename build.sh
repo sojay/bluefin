@@ -4,8 +4,6 @@ set -ouex pipefail
 
 RELEASE="$(rpm -E %fedora)"
 
-
-
 dnf5 -y copr enable ublue-os/staging
 dnf5 -y copr enable ublue-os/akmods
 
@@ -84,13 +82,13 @@ REMOVE_LIST_DX=(
   kernel-devel-matched
 )
 
-# INSTALL_LIST_DX=(
-#   /tmp/akmods-rpms/kmods/*kvmfr*.rpm
-# )
+INSTALL_LIST_DX=(
+  /tmp/akmods-rpms/kmods/*kvmfr*.rpm
+)
 
 # Install Kernel
 KERNEL_VERSION=$(dnf5 list --showduplicates kernel --quiet | grep "x86_64" | grep surface | awk '{print $2}')
-if [[ $SUFFIX == *"dx"* ]]; then
+if [[ $SUFFIX == *"surface"* ]]; then
   for pkg in "${REMOVE_LIST_DX[@]}" "${REMOVE_LIST[@]}"; do
     rpm --erase $pkg --nodeps ; 
   done
