@@ -57,9 +57,9 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 
 COPY build.sh /tmp/build.sh
 
-# RUN mkdir -p /var/lib/alternatives && \
-#     /tmp/build.sh && \
-#     ostree container commit
+RUN mkdir -p /var/lib/alternatives && \
+    /tmp/build.sh && \
+    ostree container commit
 
 ## NOTES:
 # - /var/lib/alternatives is required to prevent failure with some RPM installs
@@ -77,9 +77,9 @@ COPY build.sh /tmp/build.sh
 COPY build.sh /tmp/build.sh
 RUN chmod +x /tmp/build.sh
 
-RUN mkdir -p /var/lib/alternatives && \
-    /tmp/build.sh && \
-    ostree container commit
+# RUN mkdir -p /var/lib/alternatives && \
+#     /tmp/build.sh && \
+#     ostree container commit
 
 COPY branding.sh /tmp/branding.sh
 RUN chmod +x /tmp/branding.sh
