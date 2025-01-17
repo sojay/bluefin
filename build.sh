@@ -4,21 +4,7 @@ set -ouex pipefail
 
 RELEASE="$(rpm -E %fedora)"
 
-dnf5 -y install --allowerasing \
-  kernel-surface \
-  iptsd \
-  libwacom-surface \
-  # kernel-$KERNEL_VERSION \
-  # kernel-core-$KERNEL_VERSION \
-  # kernel-devel-$KERNEL_VERSION \
-  # kernel-devel-matched-$KERNEL_VERSION \
-  # kernel-modules-$KERNEL_VERSION \
-  # kernel-modules-core-$KERNEL_VERSION \
-  # kernel-modules-extra-$KERNEL_VERSION \
-  # kernel-tools-$KERNEL_VERSION \
-  # kernel-tools-libs-$KERNEL_VERSION \
-  # kernel-uki-virt-$KERNEL_VERSION \
-  # kernel-uki-virt-addons-$KERNEL_VERSION \
+
 
 dnf5 -y copr enable ublue-os/staging
 dnf5 -y copr enable ublue-os/akmods
@@ -98,12 +84,12 @@ REMOVE_LIST_DX=(
   kernel-devel-matched
 )
 
-INSTALL_LIST_DX=(
-  /tmp/akmods-rpms/kmods/*kvmfr*.rpm
-)
+# INSTALL_LIST_DX=(
+#   /tmp/akmods-rpms/kmods/*kvmfr*.rpm
+# )
 
 # Install Kernel
-KERNEL_VERSION=$(dnf5 list --showduplicates kernel --quiet | grep "x86_64" | grep rog | awk '{print $2}')
+KERNEL_VERSION=$(dnf5 list --showduplicates kernel --quiet | grep "x86_64" | grep surface | awk '{print $2}')
 if [[ $SUFFIX == *"dx"* ]]; then
   for pkg in "${REMOVE_LIST_DX[@]}" "${REMOVE_LIST[@]}"; do
     rpm --erase $pkg --nodeps ; 
@@ -159,8 +145,9 @@ fi
 #   --install kernel-uki-virt-addons-$KERNEL_VERSION
 
 dnf5 -y install --allowerasing \
-  asusctl \
-  asusctl-rog-gui
+  kernel-surface \
+  iptsd \
+  libwacom-surface \
   # kernel-$KERNEL_VERSION \
   # kernel-core-$KERNEL_VERSION \
   # kernel-devel-$KERNEL_VERSION \
@@ -178,7 +165,7 @@ dnf5 -y install --allowerasing \
 # cp -rf /tmp/surface-firmware/* /usr/lib/firmware/
 # rm -rf /tmp/surface-firmware
 
-QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+)' | grep 'rog' | sed -E 's/kernel-//')"
+QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+)' | grep 'surface' | sed -E 's/kernel-//')"
 /usr/libexec/rpm-ostree/wrapped/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible --zstd -v --add ostree -f "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
 
 chmod 0600 /lib/modules/$QUALIFIED_KERNEL/initramfs.img
