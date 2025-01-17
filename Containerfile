@@ -42,7 +42,18 @@ ARG SOURCE_TAG="latest"
 ### 2. SOURCE IMAGE
 ## this is a standard Containerfile FROM using the build ARGs above to select the right upstream image
 FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
-ARG KERNEL_VERSION="${KERNEL_VERSION:-6.11.11-1.surface.fc41.x86_64}"
+# ARG KERNEL_VERSION="${KERNEL_VERSION:-6.12.7-1.surface.fc41.x86_64}"
+
+# ARG SOURCE_IMAGE="bluefin"
+# ARG SOURCE_SUFFIX="-dx-nvidia-open"
+# ARG SOURCE_TAG="latest"
+# ENV SUFFIX="${SOURCE_SUFFIX}"
+# ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
+# ENV SOURCE_TAG="${SOURCE_TAG}"
+
+
+ARG KERNEL_VERSION
+ENV KERNEL_VERSION=${KERNEL_VERSION:-$(rpm -q kernel-surface --queryformat '%{VERSION}-%{RELEASE}')}
 
 ARG SOURCE_IMAGE="bluefin"
 ARG SOURCE_SUFFIX="-dx-nvidia-open"

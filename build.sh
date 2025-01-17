@@ -87,7 +87,18 @@ INSTALL_LIST_DX=(
 )
 
 # Install Kernel
-KERNEL_VERSION=$(dnf5 list --showduplicates kernel --quiet | grep "x86_64" | grep surface | awk '{print $2}')
+# KERNEL_VERSION=$(dnf5 list --showduplicates kernel --quiet | grep "x86_64" | grep surface | awk '{print $2}')
+if [ -z "${KERNEL_VERSION}" ]; then
+    KERNEL_VERSION=$(dnf5 list --showduplicates kernel-surface --quiet | grep "x86_64" | sort -V | tail -1 | awk '{print $2}')
+    if [ -z "${KERNEL_VERSION}" ]; then
+        echo "Error: Could not determine Surface kernel version"
+        echo "Available kernel versions:"
+        dnf5 list --showduplicates kernel-surface
+        exit 1
+    fi
+fi
+echo "Using Surface kernel version: ${KERNEL_VERSION}"
+
 if [[ $SUFFIX == *"surface"* ]]; then
   for pkg in "${REMOVE_LIST_DX[@]}" "${REMOVE_LIST[@]}"; do
     rpm --erase $pkg --nodeps ; 
