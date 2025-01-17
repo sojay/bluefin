@@ -174,9 +174,9 @@ dnf5 -y install --allowerasing \
   # kernel-uki-virt-addons-$KERNEL_VERSION \
 
 # Install Firmware
-git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware
-cp -rf /tmp/asus-firmware/* /usr/lib/firmware/
-rm -rf /tmp/asus-firmware
+# git clone https://gitlab.com/surface-linux/firmware.git --depth 1 /tmp/surface-firmware
+# cp -rf /tmp/surface-firmware/* /usr/lib/firmware/
+# rm -rf /tmp/surface-firmware
 
 QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+)' | grep 'rog' | sed -E 's/kernel-//')"
 /usr/libexec/rpm-ostree/wrapped/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible --zstd -v --add ostree -f "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"

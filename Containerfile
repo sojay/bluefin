@@ -33,7 +33,7 @@ ARG SOURCE_IMAGE="bluefin"
 # - stable-zfs
 # - stable-nvidia-zfs
 # - (and the above with testing rather than stable)
-ARG SOURCE_SUFFIX="-surface-nvidia"
+ARG SOURCE_SUFFIX="-surface"
 
 ## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
 ARG SOURCE_TAG="latest"
@@ -56,7 +56,7 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
 COPY build.sh /tmp/build.sh
-
+RUN chmod +x /tmp/build.sh
 RUN mkdir -p /var/lib/alternatives && \
     /tmp/build.sh && \
     ostree container commit
@@ -75,7 +75,5 @@ RUN mkdir -p /var/lib/alternatives && \
 #     /tmp/build.sh && \
 #     ostree container commit
 
-
-
 # Add Repos
-RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
+# RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
