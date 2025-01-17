@@ -106,7 +106,7 @@ rpm-ostree override replace \
         /tmp/kernel-rpms/kernel-modules-*.rpm \
         /tmp/kernel-rpms/kernel-uki-virt-*.rpm
 
-if [[ $SUFFIX == *"dx"* ]]; then
+if [[ $SUFFIX == *"nvidia"* ]]; then
   rpm-ostree override replace --experimental /tmp/kernel-rpms/kernel-devel-*.rpm
   rpm-ostree override replace --experimental "${INSTALL_LIST[@]}" "${INSTALL_LIST_DX[@]}"
 else
@@ -117,30 +117,6 @@ if [[ $SUFFIX == *"nvidia"* ]]; then
   rpm-ostree override replace --experimental \
     /tmp/akmods-nvidia-open-rpms/kmods/*nvidia*.rpm
 fi
-
-
-# rpm-ostree override remove \
-#   kernel \
-#   kernel-core \
-#   kernel-modules \
-#   kernel-modules-core \
-#   kernel-modules-extra \
-#   kernel-tools \
-#   kernel-tools-libs \
-#   kernel-devel-matched \
-#   kernel-devel \
-#   kmod-framework-laptop \
-#   --install kernel-$KERNEL_VERSION \
-#   --install kernel-core-$KERNEL_VERSION \
-#   --install kernel-devel-$KERNEL_VERSION \
-#   --install kernel-devel-matched-$KERNEL_VERSION \
-#   --install kernel-modules-$KERNEL_VERSION \
-#   --install kernel-modules-core-$KERNEL_VERSION \
-#   --install kernel-modules-extra-$KERNEL_VERSION \
-#   --install kernel-tools-$KERNEL_VERSION \
-#   --install kernel-tools-libs-$KERNEL_VERSION \
-#   --install kernel-uki-virt-$KERNEL_VERSION \
-#   --install kernel-uki-virt-addons-$KERNEL_VERSION
 
 dnf5 -y install --allowerasing \
   kernel-surface \
