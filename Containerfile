@@ -73,7 +73,6 @@ RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fed
 
 RUN dnf5 -y remove kernel* && \
     rm -r /root # not necessary on ublue-os/main derived images
-    ostree container commit
 
 RUN dnf5 -y install --allowerasing kernel-surface iptsd libwacom-surface
     ostree container commit
