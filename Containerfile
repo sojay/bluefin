@@ -43,7 +43,7 @@ ARG SOURCE_TAG="latest"
 ## this is a standard Containerfile FROM using the build ARGs above to select the right upstream image
 FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
 ARG KERNEL_VERSION="${KERNEL_VERSION:-6.11.11-1.surface.fc41.x86_64}"
-FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
+
 ARG SOURCE_IMAGE="bluefin"
 ARG SOURCE_SUFFIX="-surface"
 ARG SOURCE_TAG="latest"
@@ -55,11 +55,11 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 ## make modifications desired in your image and install packages by modifying the build.sh script
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
-# COPY build.sh /tmp/build.sh
+COPY build.sh /tmp/build.sh
 
-# RUN mkdir -p /var/lib/alternatives && \
-#     /tmp/build.sh && \
-#     ostree container commit
+RUN mkdir -p /var/lib/alternatives && \
+    /tmp/build.sh && \
+    ostree container commit
 
 ## NOTES:
 # - /var/lib/alternatives is required to prevent failure with some RPM installs
@@ -69,19 +69,13 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 # RUN dnf5 -y remove kernel* && \
 #     rm -r /root # not necessary on ublue-os/main derived images
 
-# COPY gnome-extensions.sh /tmp/gnome-extensions.sh
-# RUN chmod +x /tmp/gnome-extensions.sh
-# RUN /tmp/gnome-extensions.sh && \
+# COPY build.sh /tmp/build.sh
+# RUN chmod +x /tmp/build.sh
+# RUN mkdir -p /var/lib/alternatives && \
+#     /tmp/build.sh && \
 #     ostree container commit
 
-COPY build.sh /tmp/build.sh
-RUN chmod +x /tmp/build.sh
-RUN mkdir -p /var/lib/alternatives && \
-    /tmp/build.sh && \
-    ostree container commit
 
-# COPY branding.sh /tmp/branding.sh
-# RUN chmod +x /tmp/branding.sh
-# RUN /tmp/branding.sh && \
-#     ostree container commit
 
+# Add Repos
+RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
