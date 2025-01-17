@@ -55,11 +55,11 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 ## make modifications desired in your image and install packages by modifying the build.sh script
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
-COPY build.sh /tmp/build.sh
+# COPY build.sh /tmp/build.sh
 
-RUN mkdir -p /var/lib/alternatives && \
-    /tmp/build.sh && \
-    ostree container commit
+# RUN mkdir -p /var/lib/alternatives && \
+#     /tmp/build.sh && \
+#     ostree container commit
 
 ## NOTES:
 # - /var/lib/alternatives is required to prevent failure with some RPM installs
@@ -69,17 +69,16 @@ RUN mkdir -p /var/lib/alternatives && \
 # RUN dnf5 -y remove kernel* && \
 #     rm -r /root # not necessary on ublue-os/main derived images
 
-# COPY gnome-extensions.sh /tmp/gnome-extensions.sh
-# RUN chmod +x /tmp/gnome-extensions.sh
-# RUN /tmp/gnome-extensions.sh && \
-#     ostree container commit
+COPY gnome-extensions.sh /tmp/gnome-extensions.sh
+RUN chmod +x /tmp/gnome-extensions.sh
+RUN /tmp/gnome-extensions.sh && \
+    ostree container commit
 
 COPY build.sh /tmp/build.sh
 RUN chmod +x /tmp/build.sh
-
-# RUN mkdir -p /var/lib/alternatives && \
-#     /tmp/build.sh && \
-#     ostree container commit
+RUN mkdir -p /var/lib/alternatives && \
+    /tmp/build.sh && \
+    ostree container commit
 
 COPY branding.sh /tmp/branding.sh
 RUN chmod +x /tmp/branding.sh
