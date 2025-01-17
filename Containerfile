@@ -72,9 +72,6 @@ RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fed
 RUN dnf5 -y remove kernel* && \
     rm -r /root # not necessary on ublue-os/main derived images
 
-RUN dnf5 -y install --allowerasing kernel-surface iptsd libwacom-surface
-    ostree container commit
-
 COPY gnome-extensions.sh /tmp/gnome-extensions.sh
 RUN chmod +x /tmp/gnome-extensions.sh
 RUN /tmp/gnome-extensions.sh && \
