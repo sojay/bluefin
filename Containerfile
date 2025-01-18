@@ -58,7 +58,7 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
 COPY build.sh /tmp/build.sh
-
+RUN chmod +x /tmp/build.sh
 RUN mkdir -p /var/lib/alternatives && \
     /tmp/build.sh && \
     ostree container commit
