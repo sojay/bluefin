@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -ouex pipefail
+
+RELEASE="$(rpm -E %fedora)"
+
+curl -LO https://pkg.surfacelinux.com/fedora/linux-surface.repo
+mv linux-surface.repo /etc/yum.repos.d/
+
+dnf5 -y copr enable ublue-os/staging
+dnf5 -y copr enable ublue-os/akmods
+
+
+# Install Surface-specific packages
+dnf5 -y install --allowerasing \
+  kernel-surface \
+  iptsd \
+  libwacom-surface
+
+  # Get the installed kernel version
+QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-surface-(\d+)' | sed -E 's/kernel-surface-//')"
+if [ -z "$QUALIFIED_KERNEL" ]; then
+    echo "ERROR: Could not detect installed Surface kernel"
+    exit 1
+fi
+echo "Using Surface kernel: $QUALIFIED_KERNEL"
+
+# Rebuild initramfs for the new kernel
+/usr/libexec/rpm-ostree/wrapped/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" \
+    --reproducible --zstd -v --add ostree \
+    -f "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
+
+chmod 0600 /lib/modules/$QUALIFIED_KERNEL/initramfs.img
+
+
+### Install packages
+rpm-ostree install screen
+
+#### Example for enabling a System Unit File
+# systemctl enable podman.socket
+
+### Update Bootloader (Silverblue/Atomic Host Specific)
+# if [[ -d /usr/lib/ostree-boot/efi/EFI ]]; then
+#   echo "Updating bootloader files..."
+
+#   # Backup the existing EFI partition content
+#   mkdir -p /boot/efi/EFI.bkp
+#   cp -a /boot/efi/EFI /boot/efi/EFI.bkp
+
+#   # Copy updated bootloader versions
+#   cp /usr/lib/ostree-boot/efi/EFI/BOOT/{BOOTIA32.EFI,BOOTX64.EFI,fbia32.efi,fbx64.efi} /boot/efi/EFI/BOOT/
+#   cp /usr/lib/ostree-boot/efi/EFI/fedora/{BOOTIA32.CSV,BOOTX64.CSV,grubia32.efi,grubx64.efi,mmia32.efi,mmx64.efi,shim.efi,shimia32.efi,shimx64.efi} /boot/efi/EFI/fedora/
+
+#   # Handle specific shim file, if present
+#   if [[ -f /usr/lib/ostree-boot/efi/EFI/fedora/shimx64.efi ]]; then
+#     cp /usr/lib/ostree-boot/efi/EFI/fedora/shimx64.efi /boot/efi/EFI/fedora/shimx64-fedora.efi
+#   fi
+
+#   # Sync changes to the disk
+#   sync
+#   echo "Bootloader update completed."
+# fi
+
+# QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+)' | grep 'surface' | sed -E 's/kernel-//')"
+# /usr/libexec/rpm-ostree/wrapped/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible --zstd -v --add ostree -f "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
+
+# chmod 0600 /lib/modules/$QUALIFIED_KERNEL/initramfs.img
+
+dnf5 -y copr disable ublue-os/staging
+dnf5 -y copr disable ublue-os/akmods
+# dnf5 -y copr disable rok/cdemu% 

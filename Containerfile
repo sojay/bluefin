@@ -33,7 +33,7 @@ ARG SOURCE_IMAGE="bluefin"
 # - stable-zfs
 # - stable-nvidia-zfs
 # - (and the above with testing rather than stable)
-ARG SOURCE_SUFFIX="-dx-nvidia-open"
+ARG SOURCE_SUFFIX="-dx-surface"
 
 ## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
 ARG SOURCE_TAG="latest"
@@ -42,32 +42,22 @@ ARG SOURCE_TAG="latest"
 ### 2. SOURCE IMAGE
 ## this is a standard Containerfile FROM using the build ARGs above to select the right upstream image
 FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
-ARG KERNEL_VERSION="${KERNEL_VERSION:-6.12.7-1.surface.fc41.x86_64}"
-
-# ARG SOURCE_IMAGE="bluefin"
-# ARG SOURCE_SUFFIX="-dx-nvidia-open"
-# ARG SOURCE_TAG="latest"
-# ENV SUFFIX="${SOURCE_SUFFIX}"
-# ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
-# ENV SOURCE_TAG="${SOURCE_TAG}"
-
-
-ARG KERNEL_VERSION
-# ENV KERNEL_VERSION=${KERNEL_VERSION:-$(rpm -q kernel-surface --queryformat '%{VERSION}-%{RELEASE}')}
+# ARG KERNEL_VERSION="${KERNEL_VERSION:-6.12.7-1.surface.fc41.x86_64}"
 
 ARG SOURCE_IMAGE="bluefin"
-ARG SOURCE_SUFFIX="-dx-nvidia-open"
+ARG SOURCE_SUFFIX="-dx-surface"
 ARG SOURCE_TAG="latest"
 ENV SUFFIX="${SOURCE_SUFFIX}"
 ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
 ENV SOURCE_TAG="${SOURCE_TAG}"
+
 
 ### 3. MODIFICATIONS
 ## make modifications desired in your image and install packages by modifying the build.sh script
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
 COPY build.sh /tmp/build.sh
-RUN chmod +x /tmp/build.sh
+
 RUN mkdir -p /var/lib/alternatives && \
     /tmp/build.sh && \
     ostree container commit
@@ -77,14 +67,9 @@ RUN mkdir -p /var/lib/alternatives && \
 # - All RUN commands must end with ostree container commit
 #   see: https://coreos.github.io/rpm-ostree/container/#using-ostree-container-commit
 
-# RUN dnf5 -y remove kernel* && \
-#     rm -r /root # not necessary on ublue-os/main derived images
+# FROM quay.io/fedora-ostree-desktops/silverblue:41
 
-# COPY build.sh /tmp/build.sh
-# RUN chmod +x /tmp/build.sh
-# RUN mkdir -p /var/lib/alternatives && \
-#     /tmp/build.sh && \
-#     ostree container commit
-
-# Add Repos
-# RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
+# RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo 
+RUN dnf5 -y remove kernel* && \
+    rm -r /root # not necessary on ublue-os/main derived images
+    ostree container commit
