@@ -33,7 +33,7 @@ ARG SOURCE_IMAGE="bluefin"
 # - stable-zfs
 # - stable-nvidia-zfs
 # - (and the above with testing rather than stable)
-ARG SOURCE_SUFFIX="-dx-surface"
+ARG SOURCE_SUFFIX="-surface"
 
 ## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
 ARG SOURCE_TAG="latest"
@@ -42,6 +42,7 @@ ARG SOURCE_TAG="latest"
 ### 2. SOURCE IMAGE
 ## this is a standard Containerfile FROM using the build ARGs above to select the right upstream image
 FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
+# FROM quay.io/fedora-ostree-desktops/silverblue:41
 # ARG KERNEL_VERSION="${KERNEL_VERSION:-6.12.7-1.surface.fc41.x86_64}"
 
 ARG SOURCE_IMAGE="bluefin"
@@ -74,4 +75,3 @@ RUN dnf5 -y remove kernel* && \
     rm -r /root # not necessary on ublue-os/main derived images
     ostree container commit
 
-FROM quay.io/fedora-ostree-desktops/silverblue:41
