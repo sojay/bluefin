@@ -73,3 +73,5 @@ RUN mkdir -p /var/lib/alternatives && \
 RUN dnf5 -y remove kernel* && \
     rm -r /root # not necessary on ublue-os/main derived images
     ostree container commit
+
+FROM quay.io/fedora-ostree-desktops/silverblue:41
