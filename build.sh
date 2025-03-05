@@ -26,53 +26,38 @@ if [[ ! -f /boot/grub2/grubenv ]]; then
   grub2-editenv /boot/grub2/grubenv create
 fi
 
-# Add Surface Linux repository
+# Add Surface Linux repository (DNF5-compatible method)
 if [[ ! -f /etc/yum.repos.d/linux-surface.repo ]]; then
-  curl -LO https://pkg.surfacelinux.com/fedora/linux-surface.repo
-  mv linux-surface.repo /etc/yum.repos.d/
-  dnf clean all
+  dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
 fi
 
-# Remove conflicting kernel packages
-REMOVE_LIST=(
-  kmod-openrazer
-  kmod-v4l2loopback
-  kmod-xone
-  kernel
-  kernel-core
-  kernel-modules
-  kernel-modules-extra
-)
-
-for pkg in "${REMOVE_LIST[@]}"; do
-  if rpm -q "$pkg"; then
-    dnf remove -y "$pkg" || echo "Failed to remove $pkg. Skipping..."
-  fi
-done
-
-# Install the Surface kernel
-dnf install -y \
+# Remove conflicting packages and install Surface components
+dnf5 --disablerepo=updates -y install \
+  --allowerasing \
   kernel-surface \
-  kernel-surface-core \
-  kernel-surface-modules \
-  kernel-surface-modules-extra
+  iptsd \
+  libwacom-surface
 
-# Set the Surface kernel as the default
-KERNEL_VERSION=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}' kernel-surface | head -n 1)
-if [[ -z "$KERNEL_VERSION" ]]; then
-  echo "Failed to install the Surface kernel."
-  exit 1
+# Install Secure Boot components if needed
+if [[ -f /.dockerenv || -f /run/.containerenv ]]; then
+  echo "Skipping Secure Boot setup in container."
+else
+  dnf5 install -y surface-secureboot
 fi
 
+# Cleanup and rebuild GRUB config
 if [[ ! -f /.dockerenv && ! -f /run/.containerenv ]]; then
-  grub2-set-default "Advanced options for Fedora>Fedora, with Linux $KERNEL_VERSION"
   grub2-mkconfig -o /boot/grub2/grub.cfg
 fi
 
-# Reboot the system
+# Set default kernel
+KERNEL_VERSION=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}' kernel-surface | head -n 1)
+grub2-set-default "Advanced options for Fedora>Fedora, with Linux $KERNEL_VERSION"
+
+# Reboot if not in container
 if [[ ! -f /.dockerenv && ! -f /run/.containerenv ]]; then
-  echo "Rebooting to apply the Surface kernel..."
+  echo "Rebooting to apply changes..."
   reboot
 else
-  echo "Running in a container, skipping reboot."
+  echo "Container build complete."
 fi
