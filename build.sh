@@ -51,6 +51,14 @@ dnf5 --disablerepo=updates -y install \
   libwacom-surface \
   --allowerasing
 
+# --- Critical Fix: Rebuild initramfs for Surface kernel ---
+KERNEL_VERSION=$(rpm -q kernel-surface --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
+
+# Generate initramfs with essential drivers (NVMe, EXT4, USB, etc.)
+dracut -f --no-hostonly --add-drivers "nvme ext4 xhci_pci ahci" \
+  "/boot/initramfs-${KERNEL_VERSION}.img" \
+  "${KERNEL_VERSION}"
+  
 
 # Install Secure Boot package (optional)
 if [[ ! -f /.dockerenv && ! -f /run/.containerenv ]]; then
@@ -68,6 +76,7 @@ if [[ ! -f /.dockerenv && ! -f /run/.containerenv ]]; then
   grub2-mkconfig -o /boot/grub2/grub.cfg
   grub2-set-default "Advanced options for Fedora>Fedora, with Linux ${KERNEL_VERSION}"
 fi
+
 
 # Final cleanup
 dnf5 clean all
