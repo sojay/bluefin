@@ -33,7 +33,7 @@ ARG SOURCE_IMAGE="bluefin"
 # - stable-zfs
 # - stable-nvidia-zfs
 # - (and the above with testing rather than stable)
-ARG SOURCE_SUFFIX="-hwe"
+ARG SOURCE_SUFFIX="-surface"
 
 ## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
 ARG SOURCE_TAG="latest"
@@ -46,7 +46,7 @@ FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
 ARG KERNEL_VERSION="${KERNEL_VERSION:-6.12.7-1.surface.fc41.x86_64}"
 
 ARG SOURCE_IMAGE="bluefin"
-ARG SOURCE_SUFFIX="-hwe"
+ARG SOURCE_SUFFIX="-surface"
 ARG SOURCE_TAG="latest"
 ENV SUFFIX="${SOURCE_SUFFIX}"
 ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
