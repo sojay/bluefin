@@ -22,8 +22,8 @@ fi
 
 # Create grubenv if missing
 if [[ ! -f /boot/grub2/grubenv ]]; then
-  sudo mkdir -p /boot/grub2
-  sudo grub2-editenv /boot/grub2/grubenv create
+  mkdir -p /boot/grub2
+  grub2-editenv /boot/grub2/grubenv create
 fi
 
 # Add Surface Linux repository
@@ -46,12 +46,12 @@ REMOVE_LIST=(
 
 for pkg in "${REMOVE_LIST[@]}"; do
   if rpm -q "$pkg"; then
-    sudo dnf remove -y "$pkg" || echo "Failed to remove $pkg. Skipping..."
+    dnf remove -y "$pkg" || echo "Failed to remove $pkg. Skipping..."
   fi
 done
 
 # Install the Surface kernel
-sudo dnf install -y \
+dnf install -y \
   kernel-surface \
   kernel-surface-core \
   kernel-surface-modules \
@@ -65,14 +65,14 @@ if [[ -z "$KERNEL_VERSION" ]]; then
 fi
 
 if [[ ! -f /.dockerenv && ! -f /run/.containerenv ]]; then
-  sudo grub2-set-default "Advanced options for Fedora>Fedora, with Linux $KERNEL_VERSION"
-  sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+  grub2-set-default "Advanced options for Fedora>Fedora, with Linux $KERNEL_VERSION"
+  grub2-mkconfig -o /boot/grub2/grub.cfg
 fi
 
 # Reboot the system
 if [[ ! -f /.dockerenv && ! -f /run/.containerenv ]]; then
   echo "Rebooting to apply the Surface kernel..."
-  sudo reboot
+  reboot
 else
   echo "Running in a container, skipping reboot."
 fi
