@@ -3,14 +3,7 @@ set -ouex pipefail
 
 RELEASE="$(rpm -E %fedora)"
 
-# Install Surface userspace packages (only the ones that exist)
-rpm-ostree install \
-    iptsd \
-    libwacom-surface \
-    surface-control \
-    --allow-inactive
-
-# Configure Surface-specific settings
+# Configure Surface-specific settings for better hardware support
 mkdir -p /etc/systemd/sleep.conf.d
 cat > /etc/systemd/sleep.conf.d/surface.conf << 'EOF'
 [Sleep]
@@ -29,9 +22,24 @@ cat > /etc/udev/rules.d/99-surface-pen.rules << 'EOF'
 ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="091a", TAG+="uaccess"
 EOF
 
-# Enable Surface services
-systemctl enable iptsd
+# Configure additional Surface device permissions
+cat > /etc/udev/rules.d/99-surface-devices.rules << 'EOF'
+# Surface cameras
+SUBSYSTEM=="usb", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="090c", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0940", TAG+="uaccess"
 
-# Clean up
-dnf clean all
-rm -rf /var/cache/dnf/*
+# Surface SAM
+SUBSYSTEM=="misc", KERNEL=="surface_aggregator", MODE="0660", GROUP="input"
+SUBSYSTEM=="misc", KERNEL=="surface_aggregator_cdev", MODE="0660", GROUP="input"
+EOF
+
+# Create a surface info file
+mkdir -p /etc/surface
+cat > /etc/surface/device-info << 'EOF'
+# Surface Book 2 optimized configuration
+# This file indicates Surface-specific optimizations are applied
+SURFACE_DEVICE=surface-book-2
+SURFACE_CONFIG_VERSION=1.0
+EOF
+
+echo "Surface configuration applied successfully"

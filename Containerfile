@@ -44,9 +44,6 @@ ARG SOURCE_TAG="stable"
 FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
 # FROM quay.io/fedora-ostree-desktops/silverblue:41
 
-ARG SOURCE_IMAGE="bluefin"
-ARG SOURCE_SUFFIX=""
-ARG SOURCE_TAG="stable"
 ENV SUFFIX="${SOURCE_SUFFIX}"
 ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
 ENV SOURCE_TAG="${SOURCE_TAG}"
@@ -56,8 +53,6 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 COPY build.sh /tmp/build.sh
 RUN chmod +x /tmp/build.sh && \
     mkdir -p /var/lib/alternatives && \
-    # Add Surface Linux repository for userspace packages
-    curl -s https://pkg.surfacelinux.com/fedora/linux-surface.repo > /etc/yum.repos.d/linux-surface.repo && \
     /tmp/build.sh && \
     ostree container commit
 
