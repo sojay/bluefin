@@ -52,44 +52,12 @@ ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
 ENV SOURCE_TAG="${SOURCE_TAG}"
 
 
-### 3. INSTALL SURFACE KERNEL AND DRIVERS
-# Use prebuilt Surface kernel from ublue akmods
-COPY --from=ghcr.io/ublue-os/akmods:main-42 /tmp/rpms/kmods/kernel-modules-extra-6.*.fc42.x86_64.rpm /tmp/surface-kmods/
-COPY --from=ghcr.io/ublue-os/akmods:main-42 /tmp/rpms/kmods/*surface*.rpm /tmp/surface-kmods/
-
-RUN mkdir -p /var/lib/alternatives && \
-    # Install Surface Linux repository
-    curl -s https://pkg.surfacelinux.com/fedora/linux-surface.repo > /etc/yum.repos.d/linux-surface.repo && \
-    # Install Surface kernel and modules
-    rpm-ostree override replace \
-        --experimental \
-        /tmp/surface-kmods/kernel-modules-extra-*.rpm && \
-    rpm-ostree install \
-        --allow-inactive \
-        /tmp/surface-kmods/*surface*.rpm \
-        iptsd \
-        libwacom-surface \
-        surface-hardware-setup && \
-    # Cleanup
-    rm -rf /tmp/surface-kmods && \
-    ostree container commit
-
-## NOTES:
-# - /var/lib/alternatives is required to prevent failure with some RPM installs
-# - All RUN commands must end with ostree container commit
-#   see: https://coreos.github.io/rpm-ostree/container/#using-ostree-container-commit
-
-# FROM quay.io/fedora-ostree-desktops/silverblue:41
-
-# RUN dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo 
-# RUN dnf5 -y remove kernel* && \
-#     rm -r /root # not necessary on ublue-os/main derived images
-#     ostree container commit
-
-
-### 4. SURFACE CUSTOMIZATIONS
+### 3. SURFACE CUSTOMIZATIONS
 COPY build.sh /tmp/build.sh
 RUN chmod +x /tmp/build.sh && \
+    mkdir -p /var/lib/alternatives && \
+    # Add Surface Linux repository for userspace packages
+    curl -s https://pkg.surfacelinux.com/fedora/linux-surface.repo > /etc/yum.repos.d/linux-surface.repo && \
     /tmp/build.sh && \
     ostree container commit
 
