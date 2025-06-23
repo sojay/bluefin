@@ -43,7 +43,6 @@ ARG SOURCE_TAG="latest"
 ## this is a standard Containerfile FROM using the build ARGs above to select the right upstream image
 FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
 # FROM quay.io/fedora-ostree-desktops/silverblue:41
-ARG KERNEL_VERSION="${KERNEL_VERSION:-6.12.7-1.surface.fc41.x86_64}"
 
 ARG SOURCE_IMAGE="bluefin"
 ARG SOURCE_SUFFIX="-surface"
@@ -53,13 +52,10 @@ ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
 ENV SOURCE_TAG="${SOURCE_TAG}"
 
 
-### 3. MODIFICATIONS
-## make modifications desired in your image and install packages by modifying the build.sh script
-## the following RUN directive does all the things required to run "build.sh" as recommended.
-
+### 3. SURFACE CUSTOMIZATIONS
 COPY build.sh /tmp/build.sh
-RUN chmod +x /tmp/build.sh
-RUN mkdir -p /var/lib/alternatives && \
+RUN chmod +x /tmp/build.sh && \
+    mkdir -p /var/lib/alternatives && \
     /tmp/build.sh && \
     ostree container commit
 

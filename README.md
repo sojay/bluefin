@@ -84,3 +84,34 @@ This provides users a method of verifying the image.
 - [m2os](https://github.com/m2giles/m2os)
 - [bos](https://github.com/bsherman/bos)
 - [homer](https://github.com/bketelsen/homer/)
+
+# Bluefin Surface Book 2 Custom Image
+
+A custom Universal Blue image based on Bluefin with Surface Book 2 specific optimizations.
+
+## What this adds
+
+- Surface-specific sleep/suspend configurations  
+- IPTS touchscreen permissions
+- Additional Surface control utilities
+
+## Building
+
+```bash
+podman build -t bluefin-surface .
+```
+
+## Key Changes from Stock Bluefin
+
+1. Uses `bluefin-surface` as base image (includes Surface kernel and drivers)
+2. Adds Surface-specific power management settings
+3. Configures touchscreen device permissions
+4. Installs additional Surface control tools
+
+## Surface Book 2 Specific Features
+
+- Deep sleep mode for better battery life
+- Proper touchscreen support via IPTS
+- Surface hardware control utilities
+
+This approach uses the prebuilt Surface kernel and modules from Universal Blue rather than trying to build them during container creation, which is more reliable and faster.
