@@ -3,11 +3,10 @@ set -ouex pipefail
 
 RELEASE="$(rpm -E %fedora)"
 
-# Install Surface userspace packages
+# Install Surface userspace packages (only the ones that exist)
 rpm-ostree install \
     iptsd \
     libwacom-surface \
-    surface-hardware-setup \
     surface-control \
     --allow-inactive
 
@@ -32,7 +31,6 @@ EOF
 
 # Enable Surface services
 systemctl enable iptsd
-systemctl enable surface-hardware-setup
 
 # Clean up
 dnf clean all
