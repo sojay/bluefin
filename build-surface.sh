@@ -3,8 +3,12 @@ set -ouex pipefail
 
 RELEASE="$(rpm -E %fedora)"
 
+# Surface kernels are only available up to F41, not F42 yet
+# Use F41 kernel even on F42 base
+KERNEL_RELEASE="41"
+
 # Pull prebuilt Surface kernel from ublue cache
-skopeo copy docker://ghcr.io/ublue-os/surface-kernel:"${RELEASE}" dir:/tmp/kernel-rpms
+skopeo copy docker://ghcr.io/ublue-os/surface-kernel:"${KERNEL_RELEASE}" dir:/tmp/kernel-rpms
 KERNEL_TARGZ=$(jq -r '.layers[].digest' < /tmp/kernel-rpms/manifest.json | cut -d : -f 2)
 tar -xvzf /tmp/kernel-rpms/"$KERNEL_TARGZ" -C /
 mv /tmp/rpms/* /tmp/kernel-rpms/ || true

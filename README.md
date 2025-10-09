@@ -100,14 +100,16 @@ A custom Universal Blue image for Surface Book 2 based on Bluefin DX Surface edi
 - Solution: Build our own using prebuilt kernels from ublue infrastructure
 
 **Current Implementation:**
-- **Base**: `bluefin-dx:latest` (standard Bluefin, not Surface variant)
-- **Kernel**: Replaced with prebuilt Surface kernel from `ghcr.io/ublue-os/surface-kernel`
+- **Base**: `bluefin-dx:latest` (F42, standard Bluefin, not Surface variant)
+- **Kernel**: F41 Surface kernel from `ghcr.io/ublue-os/surface-kernel:41`
 - **Method**: Pull kernel RPMs from ublue cache, replace using `rpm-ostree override`
-- **Available kernels**:
-  - F39: kernel-surface-6.11.4
-  - F40: kernel-surface-6.12.7
-  - F41: kernel-surface-6.12.7
-  - F42: kernel-surface-6.12.7
+- **Note**: F42 Surface kernel not yet available, using F41 kernel on F42 base
+
+**Available Surface kernels in ublue cache:**
+  - F39: kernel-surface-6.11.4 ✅
+  - F40: kernel-surface-6.12.7 ✅
+  - F41: kernel-surface-6.12.7 ✅ (currently used)
+  - F42: Not available yet ❌
 
 ## What this adds
 
