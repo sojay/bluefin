@@ -91,14 +91,16 @@ A custom Universal Blue image for Surface Book 2 based on Bluefin DX Surface edi
 
 ## Current Status
 
-⚠️ **KERNEL INCOMPATIBILITY ISSUE**
+✅ **Using Prebuilt Kernel Method** (daegalus/redfin approach)
 
-Current build uses `bluefin-dx-surface:latest` which has:
-- **Kernel**: 6.16.4-114.bazzite.fc42 ❌ Too new, won't boot on Surface Book 2
-- **Known working**: kernel 6.9.x
-- **Known broken**: kernel 6.10.10+
-
-**Issue**: All current Bluefin Surface tags have incompatible kernels for Surface Book 2.
+- **Base**: `bluefin-dx:latest` (standard Bluefin, not Surface variant)
+- **Kernel**: Replaced with prebuilt Surface kernel from `ghcr.io/ublue-os/surface-kernel`
+- **Method**: Pull kernel RPMs from ublue cache, replace using `rpm-ostree override`
+- **Available kernels**:
+  - F39: kernel-surface-6.11.4
+  - F40: kernel-surface-6.12.7
+  - F41: kernel-surface-6.12.7
+  - F42: kernel-surface-6.12.7
 
 ## What this adds
 
@@ -154,33 +156,36 @@ sudo ostree admin pin 0
 
 ## Approach
 
-**Minimal Build Strategy** - Based on upstream Surface support issues:
-- Uses `bluefin-dx-surface:latest` (includes Bazzite kernel for Surface)
-- No modifications to base image (ensures stability)
-- Relies on upstream Surface support from Universal Blue
+**Prebuilt Kernel Method** - Based on @daegalus/redfin successful implementation:
 
-## Alternative Solutions (Until Kernel Issue Resolved)
+1. Start with `bluefin-dx:latest` (standard base, not Surface variant)
+2. Use `skopeo` to pull prebuilt Surface kernel from `ghcr.io/ublue-os/surface-kernel`
+3. Remove stock kernel packages
+4. Replace with Surface kernel using `rpm-ostree override replace --experimental`
+5. Install Surface userspace packages: iptsd, libwacom-surface
+6. Rebuild initramfs with dracut for the new kernel
 
-### Option 1: Wait for Upstream Fix
-Monitor [Bluefin Issue #2051](https://github.com/ublue-os/bluefin/issues/2051) for updates on Surface kernel support.
+**Why This Works:**
+- Avoids problematic `bluefin-dx-surface` tags
+- Uses tested, prebuilt kernels from ublue infrastructure
+- Same method that works for ASUS devices
+- Gives control over which Fedora version's kernel to use
 
-### Option 2: Use Vanilla Fedora with linux-surface
-```bash
-# Install Fedora 39/40 with working kernel
-sudo dnf install kernel-6.9.9-1.surface.fc39.x86_64
-```
+## Testing Different Kernel Versions
 
-### Option 3: Custom Kernel Replacement (Advanced)
-Build custom image with older kernel:
+If the default kernel doesn't boot, try older Fedora versions:
+
 ```dockerfile
-# Copy working kernel from older F39 image
-COPY --from=ghcr.io/ublue-os/bluefin-dx-surface:39 /usr/lib/modules/6.9.9* /usr/lib/modules/
-# Replace kernel packages
-RUN rpm-ostree override replace kernel-6.9.9-1.surface.fc39.x86_64
+# In Containerfile, change the RELEASE in build-surface.sh
+# Or modify to pull from specific Fedora version:
+skopeo copy docker://ghcr.io/ublue-os/surface-kernel:39 dir:/tmp/kernel-rpms
 ```
 
-### Option 4: Fork and Pin Kernel Version
-Fork the ublue-os/akmods repo and build kernel 6.9.x specifically for your needs.
+Kernel versions available:
+- **F39**: 6.11.4 - Try this first if F42 doesn't boot
+- **F40**: 6.12.7
+- **F41**: 6.12.7
+- **F42**: 6.12.7 (default)
 
 ## References
 

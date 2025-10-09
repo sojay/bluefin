@@ -1,0 +1,19 @@
+## Surface Book 2 Build using Prebuilt Kernel Approach
+## Based on daegalus/redfin method
+
+ARG SOURCE_IMAGE="bluefin"
+ARG SOURCE_SUFFIX="-dx"
+ARG SOURCE_TAG="latest"
+
+FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
+ENV SUFFIX="${SOURCE_SUFFIX}"
+ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
+ENV SOURCE_TAG="${SOURCE_TAG}"
+
+### Pull prebuilt Surface kernel from ublue cache
+COPY build-surface.sh /tmp/build-surface.sh
+RUN chmod +x /tmp/build-surface.sh && \
+    mkdir -p /var/lib/alternatives && \
+    /tmp/build-surface.sh && \
+    ostree container commit
+

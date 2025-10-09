@@ -15,7 +15,7 @@
 # - "base"
 #
 #  "aurora", "bazzite", "bluefin" or "ucore" may also be used but have different suffixes.
-ARG SOURCE_IMAGE="bluefin-dx-surface"
+ARG SOURCE_IMAGE="bluefin"
 
 ## SOURCE_SUFFIX arg should include a hyphen and the appropriate suffix name
 # These examples all work for silverblue/kinoite/sericea/onyx/lazurite/vauxite/base
@@ -33,12 +33,10 @@ ARG SOURCE_IMAGE="bluefin-dx-surface"
 # - stable-zfs
 # - stable-nvidia-zfs
 # - (and the above with testing rather than stable)
-ARG SOURCE_SUFFIX=""
+ARG SOURCE_SUFFIX="-dx"
 
 ## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
-## WARNING: "latest" has kernel 6.16.4 (F42) which likely won't boot on Surface Book 2
-## Known working: kernel 6.9.x | Known broken: 6.10.10+
-## TODO: Find a tag with kernel 6.9.x or wait for upstream fix
+## Using latest base, but replacing kernel with prebuilt Surface kernel from ublue cache
 ARG SOURCE_TAG="latest"
 
 
@@ -53,6 +51,10 @@ ENV SOURCE_TAG="${SOURCE_TAG}"
 
 
 ### 3. MODIFICATIONS
-## Make modifications as needed here
-## For now, keeping it minimal to ensure base image boots correctly
+## Use daegalus/redfin method: Pull prebuilt Surface kernel from ublue cache
+COPY build-surface.sh /tmp/build-surface.sh
+RUN chmod +x /tmp/build-surface.sh && \
+    mkdir -p /var/lib/alternatives && \
+    /tmp/build-surface.sh && \
+    ostree container commit
 
