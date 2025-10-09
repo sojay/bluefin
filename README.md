@@ -91,10 +91,14 @@ A custom Universal Blue image for Surface Book 2 based on Bluefin DX Surface edi
 
 ## Current Status
 
-Based on upstream issues with Surface support:
-- Using `bluefin-dx-surface:latest` which includes Bazzite kernel
-- Minimal build approach to avoid boot conflicts
-- Known kernel issues: 6.10.10+ doesn't boot, 6.9.x works
+⚠️ **KERNEL INCOMPATIBILITY ISSUE**
+
+Current build uses `bluefin-dx-surface:latest` which has:
+- **Kernel**: 6.16.4-114.bazzite.fc42 ❌ Too new, won't boot on Surface Book 2
+- **Known working**: kernel 6.9.x
+- **Known broken**: kernel 6.10.10+
+
+**Issue**: All current Bluefin Surface tags have incompatible kernels for Surface Book 2.
 
 ## What this adds
 
@@ -154,6 +158,29 @@ sudo ostree admin pin 0
 - Uses `bluefin-dx-surface:latest` (includes Bazzite kernel for Surface)
 - No modifications to base image (ensures stability)
 - Relies on upstream Surface support from Universal Blue
+
+## Alternative Solutions (Until Kernel Issue Resolved)
+
+### Option 1: Wait for Upstream Fix
+Monitor [Bluefin Issue #2051](https://github.com/ublue-os/bluefin/issues/2051) for updates on Surface kernel support.
+
+### Option 2: Use Vanilla Fedora with linux-surface
+```bash
+# Install Fedora 39/40 with working kernel
+sudo dnf install kernel-6.9.9-1.surface.fc39.x86_64
+```
+
+### Option 3: Custom Kernel Replacement (Advanced)
+Build custom image with older kernel:
+```dockerfile
+# Copy working kernel from older F39 image
+COPY --from=ghcr.io/ublue-os/bluefin-dx-surface:39 /usr/lib/modules/6.9.9* /usr/lib/modules/
+# Replace kernel packages
+RUN rpm-ostree override replace kernel-6.9.9-1.surface.fc39.x86_64
+```
+
+### Option 4: Fork and Pin Kernel Version
+Fork the ublue-os/akmods repo and build kernel 6.9.x specifically for your needs.
 
 ## References
 

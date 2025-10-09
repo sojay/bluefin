@@ -36,6 +36,9 @@ ARG SOURCE_IMAGE="bluefin-dx-surface"
 ARG SOURCE_SUFFIX=""
 
 ## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
+## WARNING: "latest" has kernel 6.16.4 (F42) which likely won't boot on Surface Book 2
+## Known working: kernel 6.9.x | Known broken: 6.10.10+
+## TODO: Find a tag with kernel 6.9.x or wait for upstream fix
 ARG SOURCE_TAG="latest"
 
 
