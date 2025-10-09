@@ -93,6 +93,13 @@ A custom Universal Blue image for Surface Book 2 based on Bluefin DX Surface edi
 
 ✅ **Using Prebuilt Kernel Method** (daegalus/redfin approach)
 
+**Why This Approach:**
+- Previous `bluefin-dx-surface:latest` worked in December 2024 (version 41.20241223.1)
+- That specific digest and F41 tags are **no longer available** (removed from registry)
+- Issue #2051: Bluefin team discontinuing Surface/Asus support
+- Solution: Build our own using prebuilt kernels from ublue infrastructure
+
+**Current Implementation:**
 - **Base**: `bluefin-dx:latest` (standard Bluefin, not Surface variant)
 - **Kernel**: Replaced with prebuilt Surface kernel from `ghcr.io/ublue-os/surface-kernel`
 - **Method**: Pull kernel RPMs from ublue cache, replace using `rpm-ostree override`
