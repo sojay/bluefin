@@ -49,10 +49,7 @@ ENV IMAGE="${SOURCE_IMAGE}${SOURCE_SUFFIX}"
 ENV SOURCE_TAG="${SOURCE_TAG}"
 
 
-### 3. SURFACE CUSTOMIZATIONS
-COPY build.sh /tmp/build.sh
-RUN chmod +x /tmp/build.sh && \
-    mkdir -p /var/lib/alternatives && \
-    /tmp/build.sh && \
-    ostree container commit
+### 3. MODIFICATIONS
+## Make modifications as needed here
+## For now, keeping it minimal to ensure base image boots correctly
 

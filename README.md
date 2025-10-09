@@ -87,7 +87,14 @@ This provides users a method of verifying the image.
 
 # Bluefin Surface Book 2 Custom Image
 
-A custom Universal Blue image based on Bluefin with Surface Book 2 specific optimizations.
+A custom Universal Blue image for Surface Book 2 based on Bluefin DX Surface edition.
+
+## Current Status
+
+Based on upstream issues with Surface support:
+- Using `bluefin-dx-surface:latest` which includes Bazzite kernel
+- Minimal build approach to avoid boot conflicts
+- Known kernel issues: 6.10.10+ doesn't boot, 6.9.x works
 
 ## What this adds
 
@@ -101,17 +108,55 @@ A custom Universal Blue image based on Bluefin with Surface Book 2 specific opti
 podman build -t bluefin-surface .
 ```
 
-## Key Changes from Stock Bluefin
+## Deployment
 
-1. Uses `bluefin-surface` as base image (includes Surface kernel and drivers)
-2. Adds Surface-specific power management settings
-3. Configures touchscreen device permissions
-4. Installs additional Surface control tools
+### Verify Kernel Version First
 
-## Surface Book 2 Specific Features
+```bash
+podman run --rm ghcr.io/sojay/bluefin:latest rpm -qa | grep kernel
+```
+- ✅ Good: `kernel-6.9.x` or contains `bazzite`
+- ❌ Bad: `kernel-6.10.10+` (known boot issues)
 
-- Deep sleep mode for better battery life
-- Proper touchscreen support via IPTS
-- Surface hardware control utilities
+### Deploy
 
-This approach uses the prebuilt Surface kernel and modules from Universal Blue rather than trying to build them during container creation, which is more reliable and faster.
+```bash
+sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/sojay/bluefin:latest
+sudo systemctl reboot
+```
+
+### Update Existing
+
+```bash
+sudo rpm-ostree upgrade
+```
+
+## Troubleshooting Boot Issues
+
+### Black Screen
+- **Cause**: Incompatible kernel
+- **Fix**: Hold Shift at boot → select pinned backup
+- **Rollback**: `sudo rpm-ostree rollback`
+
+### Deployment Mismatch
+- **Error**: "Could not resolve init executable"
+- **Fix**: Boot GRUB (hold Shift) → select working deployment
+- **Cleanup**: `sudo rpm-ostree cleanup -r`
+
+### Keep Backup
+```bash
+sudo ostree admin pin 0
+```
+
+## Approach
+
+**Minimal Build Strategy** - Based on upstream Surface support issues:
+- Uses `bluefin-dx-surface:latest` (includes Bazzite kernel for Surface)
+- No modifications to base image (ensures stability)
+- Relies on upstream Surface support from Universal Blue
+
+## References
+
+- [Bluefin Surface/Asus Issues](https://github.com/ublue-os/bluefin/issues/2051)
+- [Fedora 40 kernel 6.10 boot issues](https://github.com/linux-surface/linux-surface/issues/1560)
+- [Surface Pro 10 support status](https://github.com/linux-surface/linux-surface/issues/1608)
