@@ -13,20 +13,8 @@ KERNEL_TARGZ=$(jq -r '.layers[].digest' < /tmp/kernel-rpms/manifest.json | cut -
 tar -xvzf /tmp/kernel-rpms/"$KERNEL_TARGZ" -C /
 mv /tmp/rpms/* /tmp/kernel-rpms/ || true
 
-# Reset any existing kernel overrides first
-rpm-ostree override reset \
-    kernel \
-    kernel-core \
-    kernel-modules \
-    kernel-modules-core \
-    kernel-modules-extra \
-    kernel-surface \
-    kernel-surface-core \
-    kernel-surface-modules \
-    kernel-surface-modules-core \
-    kernel-surface-modules-extra || true
-
-# Remove existing kernel packages
+# Remove existing kernel packages using rpm (not rpm-ostree reset)
+# In container builds, rpm-ostree override reset doesn't work
 REMOVE_LIST=(
   kernel
   kernel-core
@@ -55,8 +43,8 @@ rpm-ostree install --allow-inactive \
     /tmp/kernel-rpms/libwacom-surface-data-*.rpm
 
 if [[ $SUFFIX == *"dx"* ]]; then
-  # Reset devel package overrides if they exist
-  rpm-ostree override reset kernel-devel kernel-devel-matched kernel-surface-devel kernel-surface-devel-matched || true
+  # Remove existing devel packages using rpm (not rpm-ostree reset)
+  rpm --erase kernel-devel kernel-devel-matched --nodeps || true
   
   rpm-ostree override replace --experimental \
       /tmp/kernel-rpms/kernel-surface-devel-*.rpm \
